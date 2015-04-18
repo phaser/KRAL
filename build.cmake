@@ -155,7 +155,7 @@ function(add_target TNAME)
 endfunction()
 
 # Reading the config file
-include (${CMAKE_SOURCE_DIR}/config_new.cmake)
+include (${CMAKE_SOURCE_DIR}/config.cmake)
 
 # outputs a pretty printed list with the available targets
 macro (list_targets OUTVAR)

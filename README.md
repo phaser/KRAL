@@ -9,7 +9,7 @@ generates and runs a long CMake command that generates the project. It is
 entirely possible to do the same thing without the builder but it is considerably
 more cumbersome.
 
-The format of config.cmake is described in config.cmake.md file.
+The format of config.cmake is described in doc/config.cmake.md file.
 
 To see all the targets from a config.cmake file you can run the builder script
 from the directory that contains the config.cmake file (usually the top-level
