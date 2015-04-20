@@ -55,3 +55,5 @@ option of listing it.
         CUSTOM_ARGS:    -Wdev
         CUSTOM_ARGS_PD: 
   
+All the modules are structured in a certain way and will use special KRAL functions.
+You can read more about this in doc/kral_module.md
