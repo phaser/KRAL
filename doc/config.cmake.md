@@ -42,7 +42,7 @@ some new properties.
 
 # add_target parameters explained
 
-## KRAL_PATH
+#### KRAL_PATH
 
 This sets the path to KRAL. In the future this will not be necessary. I can modify
 build.cmake to set this automatically to be the path of build.cmake. Usually this
@@ -112,3 +112,7 @@ There are some IDEs, like CLion or QTCreator, that support CMake directly. For
 these a master CMakeLists.txt is generated that can be loaded into those IDEs
 as a project. This option can be set to True and will trigger the generation
 of the CMakeLists.txt file.
+
+#### COMPILER_ARGS
+
+Project wide compiler arguments.
