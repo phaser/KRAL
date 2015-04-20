@@ -48,35 +48,35 @@ This sets the path to KRAL. In the future this will not be necessary. I can modi
 build.cmake to set this automatically to be the path of build.cmake. Usually this
 is set once per config.cmake, so you can set it in the __DEFAULT target.
 
-### PACKAGE_DIRS
+#### PACKAGE_DIRS
 
 With package dirs you can configure multiple paths where KRAL will look for modules
 when they are declared as dependencies in calls to *module* or *library* function.
 
-### PROJECTS_ROOT
+#### PROJECTS_ROOT
 
 When you generate the projects, all are placed in a single location that is defined
 by PROJECTS_ROOT.
 
-### PLATFORM
+#### PLATFORM
 
 The platform you build for. This may be misleading, because it isn't refering to the
 operating system. Essentially PLATFORM will define what directory from sources will
 be compiled. There is a sources/common and then sources/${PLATFORM} that is added to
 the compilation. So this can be anything. It is just a convention.
 
-### PROJECT_DIR 
+#### PROJECT_DIR 
 
 The folder of the top level module that will be compiled. You specify the top level 
 module and that module will declare various dependencies that will be discovered
 automatically insidet ${PACKAGE_DIRS} paths.
 
-### BUILD_DIR
+#### BUILD_DIR
 
 The name of the folder that will be created in PROJECTS_ROOT and where this project
 will be compiled.
 
-### PROJECT_TYPE
+#### PROJECT_TYPE
 
 This is an alias for CMake generator. You can pass here anything that is acceptable
 as CMake generator. To find out what generators are supported on your system invoke
@@ -84,17 +84,17 @@ CMakes help and at the end there is the section "Generators".
 
     cmake --help
 
-### BUILD_TYPE
+#### BUILD_TYPE
 
 Is your build "debug" or "release"?
 
-### INHERIT
+#### INHERIT
 
 Used to INHERIT all the properties of another target. This imediatly invokes a copy
 of all the inherited target properties so it should be specified first if you don't
 want other target properties to be overriden.
 
-### CUSTOM_ARGS
+#### CUSTOM_ARGS
 
 Arguments that are passed to CMake when it gets invoked. All the defines (-D) are
 parsed and placed in a file. Sometimes you want properties to be passed directly
@@ -102,11 +102,11 @@ and if this is the case please use CUSTOM_ARGS_PD. This behaviour is needed beca
 the command line parameters can get too long and on Windows you have a limit for
 the length of the command.
 
-### CUSTOM_ARGS_PD
+#### CUSTOM_ARGS_PD
 
 See CUSTOM_ARGS.
 
-### GEN_CMAKELISTS
+#### GEN_CMAKELISTS
 
 There are some IDEs, like CLion or QTCreator, that support CMake directly. For
 these a master CMakeLists.txt is generated that can be loaded into those IDEs
