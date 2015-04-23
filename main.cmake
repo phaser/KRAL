@@ -11,6 +11,7 @@ set (SOURCES_EXTENSIONS "*.c;*.cc;*.cpp;*.cxx;*.m;*.mm;*.ui;*.h")
 set (INCLUDE_EXTENSIONS "*.h;*.hpp")
 
 function (module PNAME)
+    set (RUNTIME_TO_COPY "" CACHE INTERNAL "Runtime locations from which to copy files" FORCE)
     set (GLOBAL_TAB "")
     message(STATUS "Build module: ${PNAME}")
     set (value 1)
@@ -38,6 +39,29 @@ function (module PNAME)
     set (BUILD_OPTION "")
     set_module_includes(${PNAME})
     build_dependencies(${PNAME})
+    append_to_runtime_files(${CMAKE_CURRENT_LIST_DIR}/runtime)	
+    
+    # if RUNTIME_DIR isn't set then give it some default values
+    if ("${RUNTIME_DIR}" STREQUAL "")
+        if (ANDROID)
+            # on android we have to give it a static value because
+            # we can't use the library location because the library
+            # isn't generated in the binary directory, we copy it
+            # afterwards
+            set (RUNTIME_DIR "${CMAKE_BINARY_DIR}")
+            set (RUNTIME_SUFFIX "/android")
+        else ()
+            get_target_property(E_MODULE_PATH ${NAME} LOCATION_${CMAKE_BUILD_TYPE})
+            message ("MODULE_PATH: ${E_MODULE_PATH}")
+            string(REPLACE "$(EFFECTIVE_PLATFORM_NAME)" "" E_MODULE_PATH ${E_MODULE_PATH})
+            get_filename_component(E_MODULE_PATH ${E_MODULE_PATH} PATH)
+            set (RUNTIME_DIR "${E_MODULE_PATH}")
+            set (RUNTIME_SUFFIX "")
+        endif ()
+        message (STATUS "RUNTIME_DIR was set to default value: ${RUNTIME_DIR}${RUNTIME_SUFFIX}")
+    endif ()
+
+    copy_runtime_files()
 endfunction()
 
 function (library PNAME)
@@ -63,6 +87,7 @@ function (library PNAME)
     build_dependencies(${PNAME})
     
     set (LIB_TO_BE_LINKED "${PNAME}" CACHE INTERNAL "LINK" FORCE)
+    append_to_runtime_files(${CMAKE_CURRENT_LIST_DIR}/runtime)	
 endfunction()
 
 # export a framework to be used by those who add this
