@@ -3,7 +3,13 @@
 # KRAL
 # Copyright (C) 2015 Cristian Bidea
 cmake_minimum_required (VERSION 3.0)
-
+macro(kral_init)
+    foreach (lib ${CONSTRUCTED_LIBS})
+        unset(${lib} CACHE)
+    endforeach()
+    unset(CONSTRUCTED_LIBS CACHE)
+endmacro()
+kral_init()
 include (config)
 include (util)
 
@@ -40,28 +46,9 @@ function (module PNAME)
     set_module_includes(${PNAME})
     build_dependencies(${PNAME})
     append_to_runtime_files(${CMAKE_CURRENT_LIST_DIR}/runtime)	
-    
-    # if RUNTIME_DIR isn't set then give it some default values
-    if ("${RUNTIME_DIR}" STREQUAL "")
-        if (ANDROID)
-            # on android we have to give it a static value because
-            # we can't use the library location because the library
-            # isn't generated in the binary directory, we copy it
-            # afterwards
-            set (RUNTIME_DIR "${CMAKE_BINARY_DIR}")
-            set (RUNTIME_SUFFIX "/android")
-        else ()
-            get_target_property(E_MODULE_PATH ${NAME} LOCATION_${CMAKE_BUILD_TYPE})
-            message ("MODULE_PATH: ${E_MODULE_PATH}")
-            string(REPLACE "$(EFFECTIVE_PLATFORM_NAME)" "" E_MODULE_PATH ${E_MODULE_PATH})
-            get_filename_component(E_MODULE_PATH ${E_MODULE_PATH} PATH)
-            set (RUNTIME_DIR "${E_MODULE_PATH}")
-            set (RUNTIME_SUFFIX "")
-        endif ()
-        message (STATUS "RUNTIME_DIR was set to default value: ${RUNTIME_DIR}${RUNTIME_SUFFIX}")
-    endif ()
-
+    init_runtime_location() 
     copy_runtime_files()
+
 endfunction()
 
 function (library PNAME)

@@ -34,7 +34,7 @@ The top level CMakeLists.txt file has some rules you have to follow.
     set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${KRAL_PATH})
     project (${PROJ_NAME})
     include (main)
-    
+
     module(${PROJ_NAME}
             MODULE_TYPE MACOSX_BUNDLE
             DEPENDENCY  SDL2                2.0.0
@@ -44,7 +44,9 @@ The top level CMakeLists.txt file has some rules you have to follow.
 First you have to set the CMAKE_MODULE_PATH variable to include the KRAL
 directory. This makes it easy to include other CMake files from there.
 Then you have to include main.cmake to have access to KRAL functions and
-macros.
+macros. You only need to include this once in your top level CMakeLists.txt
+file. All the other files are included by KRAL, so they'll have access to
+this as well.
 
 In order to create a new executable you can invoke the module function.
 On the ${PROJ_NAME} target you can invoke all other CMake functions lile
