@@ -113,6 +113,8 @@ these a master CMakeLists.txt is generated that can be loaded into those IDEs
 as a project. This option can be set to True and will trigger the generation
 of the CMakeLists.txt file.
 
-#### COMPILER_ARGS
+#### COMPILER_ARGS_DEBUG and COMPILER_ARGS_RELEASE
 
-Project wide compiler arguments.
+Project wide compiler arguments. Use one for debug and the other for release
+version and then you can switch between them by setting BUILD_TYPE property
+on "debug" or "release".
