@@ -3,6 +3,7 @@
 # KRAL
 # Copyright (C) 2015 Cristian Bidea
 cmake_minimum_required (VERSION 3.0)
+cmake_policy(SET CMP0054 NEW)
 macro(kral_init)
     foreach (lib ${CONSTRUCTED_LIBS})
         unset(${lib} CACHE)
@@ -118,3 +119,32 @@ macro(link_ios_framework)
         message (STATUS "${GLOBAL_TAB}Framework ${LIF_NAME} found at ${FRAMEWORK_${LIF_NAME}}")
     endif ()
 endmacro(link_ios_framework)
+
+# This function is used by packages that don't have sources, only precompiled libs.
+macro(export_library NAME)
+	MESSAGE (STATUS "Exporting libraries for ${NAME}")
+    IF (NOT "${ARGV1}" STREQUAL "")
+	    export_all_libraries (${NAME} ${ARGV1})
+    ELSE (NOT "${ARGV1}" STREQUAL "")
+	    export_all_libraries (${NAME})
+    ENDIF (NOT "${ARGV1}" STREQUAL "")
+    message ("CDFIEL: ${CURRENT_DEPENDENCY}")
+    message ("NL: ${${NAME}_LIBS}")
+    set (${CURRENT_DEPENDENCY} "${${NAME}_LIBS}" CACHE INTERNAL "${CURRENT_DEPENDENCY}" FORCE)
+    list(APPEND CONSTRUCTED_LIBS "${CURRENT_DEPENDENCY}")
+    set (CONSTRUCTED_LIBS "${CONSTRUCTED_LIBS}" CACHE INTERNAL "CONSTRUCTED_LIBS" FORCE)
+    append_to_runtime_files(${CMAKE_CURRENT_LIST_DIR}/runtime)	
+endmacro(export_library)
+
+# This function is used to export all libraries contained in the libs folder
+# of the package.
+macro(export_all_libraries NAME)
+	#todo find a way to abstract the extension of the library
+    if (${ARGC} GREATER 2)
+        set (POSTFIX "${ARGV1}")
+    endif()
+	file (GLOB_RECURSE ${NAME}_LIBS "${CMAKE_CURRENT_LIST_DIR}/lib/${PLATFORM}${POSTFIX}/*")
+
+	STRING(REPLACE ";" " " ${NAME}_LIBS "${${NAME}_LIBS}")
+	MESSAGE("EXPORT LIB: ${${NAME}_LIBS}")
+endmacro(export_all_libraries)

@@ -3,6 +3,7 @@
 # KRAL
 # Copyright (C) 2015 Cristian Bidea
 cmake_minimum_required (VERSION 3.0)
+cmake_policy(SET CMP0054 NEW)
 
 macro(set_module_includes PNAME)
     set (${PNAME}_MODULE_INCLUDE_DIRS "")
@@ -46,9 +47,11 @@ macro(build_dependencies PNAME)
                         set (CONSTRUCTED_LIBS "${CONSTRUCTED_LIBS}" CACHE INTERNAL "CONSTRUCTED_LIBS" FORCE)
                     endif()
                 endif()
+                message("CD: ${CURRENT_DEPENDENCY}")
                 message("DEP: ${${dep}-lib-name}")
                 if (NOT "${${dep}-lib-name}" STREQUAL "")
-                    target_link_libraries(${PNAME} "${${dep}-lib-name}")
+                    message ("Linking: ${${dep}-lib-name}")
+                    target_link_libraries(${PNAME} ${${dep}-lib-name})
                 endif()
                 if (NOT "${EXPORTED_IOS_FRAMEWORKS}" STREQUAL "")
                     foreach (framework ${EXPORTED_IOS_FRAMEWORKS})
