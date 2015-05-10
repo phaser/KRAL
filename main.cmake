@@ -147,3 +147,40 @@ macro (add_to_link_libs LIB)
     list(APPEND CONSTRUCTED_LIBS "${CURRENT_DEPENDENCY}")
     set (CONSTRUCTED_LIBS "${CONSTRUCTED_LIBS}" CACHE INTERNAL "CONSTRUCTED_LIBS" FORCE)
 endmacro()
+
+# android generate project doesn't do everything necessary for ndk-gdb to work
+# we have to do this manually. This macro should do everything in this regard
+# it is in the private interface because it is automatically called from within KRALMain.txt
+# the user shouldn't have the need to call it.
+macro (generate_ndkgdb_config TARGET)    
+    MESSAGE(STATUS "Generating ndk-gdb config...")
+    MESSAGE(STATUS "ANDROID_ABI: ${ANDROID_ABI}")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/obj")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/obj/local")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/obj/local/${ANDROID_ABI}")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/libs")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/libs/${ANDROID_ABI}")
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/jni")
+    FILE (WRITE "${CMAKE_BINARY_DIR}/android/jni/Android.mk" "")
+
+    SET (GDBSETUPFILE "${CMAKE_BINARY_DIR}/android/libs/armeabi/gdb.setup")
+    FILE (WRITE "${GDBSETUPFILE}" "set solib-search-path ${CMAKE_BINARY_DIR}/android/obj/local/${ANDROID_ABI}\n")
+    FILE (APPEND "${GDBSETUPFILE}" "source $ENV{ENDK}/prebuilt/common/gdb/common.setup\n")
+    FILE (APPEND "${GDBSETUPFILE}" "directory $ENV{NDK}/platforms/${ANDROID_API_LEVEL}/arch-arm/usr/include ${SOURCE_LOCATIONS}\n")
+
+    if (NOT EXISTS ${CMAKE_BINARY_DIR}/android/libs/armeabi/ )
+        EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/libs/armeabi")
+    endif()
+    EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E copy $ENV{NDK}/prebuilt/android-arm/gdbserver/gdbserver ${CMAKE_BINARY_DIR}/android/libs/armeabi")
+    if (NOT "${ANDROID_ABI}" STREQUAL "armeabi")
+        if (NOT EXISTS ${CMAKE_BINARY_DIR}/android/libs/${ANDROID_ABI}/ )
+            EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E make_directory ${CMAKE_BINARY_DIR}/android/libs/${ANDROID_ABI}")
+        endif()
+        EXEC_PROGRAM("\"${CMAKE_COMMAND}\" -E copy $ENV{NDK}/prebuilt/android-arm/gdbserver/gdbserver ${CMAKE_BINARY_DIR}/android/libs/${ANDROID_ABI}")
+    endif ()
+    ADD_CUSTOM_COMMAND(TARGET ${TARGET}
+                       POST_BUILD
+                       COMMAND "${CMAKE_COMMAND}" ARGS "-E" "copy_directory" "${CMAKE_CURRENT_LIST_DIR}/libs" "${CMAKE_BINARY_DIR}/android/obj/local"
+                       COMMAND "${CMAKE_COMMAND}" ARGS "-E" "copy_directory" "${CMAKE_BINARY_DIR}/android/libs" "${CMAKE_BINARY_DIR}/android/obj/local")
+endmacro (generate_ndkgdb_config)
