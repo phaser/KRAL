@@ -166,7 +166,7 @@ macro (generate_ndkgdb_config TARGET)
 
     SET (GDBSETUPFILE "${CMAKE_BINARY_DIR}/android/libs/armeabi/gdb.setup")
     FILE (WRITE "${GDBSETUPFILE}" "set solib-search-path ${CMAKE_BINARY_DIR}/android/obj/local/${ANDROID_ABI}\n")
-    FILE (APPEND "${GDBSETUPFILE}" "source $ENV{ENDK}/prebuilt/common/gdb/common.setup\n")
+    FILE (APPEND "${GDBSETUPFILE}" "source $ENV{NDK}/prebuilt/common/gdb/common.setup\n")
     FILE (APPEND "${GDBSETUPFILE}" "directory $ENV{NDK}/platforms/${ANDROID_API_LEVEL}/arch-arm/usr/include ${SOURCE_LOCATIONS}\n")
 
     if (NOT EXISTS ${CMAKE_BINARY_DIR}/android/libs/armeabi/ )
