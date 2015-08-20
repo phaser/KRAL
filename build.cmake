@@ -59,7 +59,11 @@ endfunction()
 macro(get_target_value LST IDX OVAL)
     list(GET ${LST} ${IDX} __TEMP)
     string(REPLACE "_&_" ";" ___TEMP "${__TEMP}")
-    set(${OVAL} ${___TEMP})
+    if ("${___TEMP}" STREQUAL "_N_")
+        set (${OVAL} "") 
+    else() 
+    	set(${OVAL} ${___TEMP})
+    endif ()
 endmacro()
 
 # Utility macro
@@ -216,7 +220,7 @@ endfunction()
 # Parses custom args options and compiler flags to file to a special file
 macro (parse_custom_args LT)
     get_target_value(${LT} ${CUSTOM_ARGS} OVAL) 
-    set (CUSTOM_ARGS_${LT} "${OVAL}") 
+    set (CUSTOM_ARGS_${LT} ${OVAL})
     string (REPLACE "-D" " CACHE INTERNAL \"\" FORCE)\nset (\"" NEWSTR ${CUSTOM_ARGS_${LT}})
     string (REPLACE "=" "\" " NEWSTR ${NEWSTR})
     string (FIND ${NEWSTR} " CACHE INTERNAL" POS)
@@ -280,6 +284,7 @@ get_target_value(${T} ${PACKAGE_DIRS} PACKAGE_DIRS_STR)
 get_target_value(${T} ${PROJECTS_ROOT} PROJECTS_ROOT_DIR)
 get_target_value(${T} ${CUSTOM_ARGS_PD} CAPDV) 
 set (CUSTOM_ARGS_PD_${T} "${CAPDV}") 
+message ("CA: ${CUSTOM_ARGS_PD_${T}}")
 get_target_value(${T} ${BUILD_DIR} CURRENT_BUILD_DIR)
 get_target_value(${T} ${GEN_CMAKELISTS} GENERATE_CMAKELISTS)
 get_target_value(${T} ${BUILD_TYPE} BUILD_TYPE_${T})
@@ -309,6 +314,7 @@ set (CMAKE_GENERATED_COMMAND "${CMAKE_GENERATED_COMMAND} -DNEW_CMAKE=1 -DPACKAGE
 ## GENERATE
 ###########################
 if (GENERATE OR G)
+    message (STATUS "COMMAND: ${CMAKE_COMMAND}" ARGS -E chdir ${PROJECTS_ROOT_DIR}/${CURRENT_BUILD_DIR} "${CMAKE_GENERATED_COMMAND}")
     exec_program("\"${CMAKE_COMMAND}\" -E remove_directory ${PROJECTS_ROOT_DIR}/${CURRENT_BUILD_DIR}" RETURN_VALUE GCRV)
 
     if (NOT "${GCRV}" STREQUAL "0")
